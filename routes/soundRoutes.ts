@@ -1,22 +1,64 @@
 import express from "express";
-const router = express.Router();
+import { body, param } from "express-validator";
 
 import * as soundCtrl from "../controllers/soundController";
 
-// GET - sound(s)
+const router = express.Router();
+
+// GET - sound
 router.get("/", soundCtrl.getSounds);
-router.get("/:soundId", soundCtrl.getSound);
+router.get(
+  "/:soundId",
+  [
+    param("soundId")
+      .trim()
+      .notEmpty()
+      .withMessage("soundId must be present in path"),
+  ],
+  soundCtrl.getSound
+);
 
 // GET - play sound on server
-router.get("/:soundId/play", soundCtrl.playSound);
+router.get(
+  "/:soundId/play",
+  [
+    param("soundId")
+      .trim()
+      .notEmpty()
+      .withMessage("soundId must be present in path"),
+  ],
+  soundCtrl.playSound
+);
 
 // POST - new sound
-router.post("/", soundCtrl.postSound);
+router.post(
+  "/",
+  [body("name").trim().notEmpty().withMessage("Sound name is required")],
+  soundCtrl.postSound
+);
 
 // PUT - update sound
-router.put("/:soundId", soundCtrl.updateSound);
+router.put(
+  "/:soundId",
+  [
+    param("soundId")
+      .trim()
+      .notEmpty()
+      .withMessage("soundId must be present in path"),
+  ],
+  soundCtrl.updateSound
+);
 
 // DELETE - delete sound
-router.delete("/:soundId", soundCtrl.deleteSound);
+router.delete(
+  "/:soundId",
+  [
+    param("soundId")
+      .trim()
+      .notEmpty()
+      .withMessage("soundId must be present in path"),
+  ],
+  soundCtrl.deleteSound
+);
 
 export default router;

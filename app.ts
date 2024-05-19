@@ -1,25 +1,25 @@
 import * as fs from "fs";
 import * as path from "path";
 
+import socket from "./util/socket";
 import express, { Request, Response, NextFunction } from "express";
 import { json } from "body-parser";
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import * as dotenv from "dotenv";
+import sequelize from "./util/sequelize";
+import * as bcrypt from "bcrypt";
 dotenv.config();
 
 // public folder
-const dataPath = path.join(__dirname, "public", "sounds.json"),
-  soundsFolder = path.join(__dirname, "public", "sounds"),
+const soundsFolder = path.join(__dirname, "public", "sounds"),
   imagesFolder = path.join(__dirname, "public", "images");
-
 if (!fs.existsSync(soundsFolder))
   fs.mkdirSync(soundsFolder, { recursive: true });
 if (!fs.existsSync(imagesFolder))
   fs.mkdirSync(imagesFolder, { recursive: true });
-if (!fs.existsSync(dataPath))
-  fs.writeFileSync(dataPath, JSON.stringify({ sounds: [] }), "utf-8");
 
+// images / audio only
 const multerFileTypes: {
   [key: string]: string[];
 } = {
@@ -59,17 +59,50 @@ app.use(
   ])
 );
 
+import User from "./models/userModel";
+
+import isAuth from "./middleware/is-auth.js";
+
 // routes
 import soundRoutes from "./routes/soundRoutes";
+import authRoutes from "./routes/authRoutes";
 
-app.get("/", (req, res, next) => {
-  res.status(200).json({ message: "test" });
-});
-app.use("/sounds", soundRoutes);
-app.use("/files", express.static(soundsFolder)); // static for sound files
+app.use("/auth", authRoutes);
+app.use("/sounds", isAuth, soundRoutes);
+app.use("/files", isAuth, express.static(soundsFolder)); // static for sound files
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  res.status(err.status || 500).json({ message: err.message });
+  res
+    .status(err.status || 500)
+    .json({ message: err.message, errors: err.errors?.errors });
 });
 
-const port = process.env.port || 3000;
-app.listen(port, () => console.log(`App started on ${port}`));
+const init = async function () {
+  await sequelize.sync(/* { force: true } */);
+
+  // create default user (if not exists)
+  const defaultPassword = await bcrypt.hash("root", 12);
+  await User.findOrCreate({
+    where: { username: "root" },
+    defaults: {
+      username: "root",
+      password: defaultPassword,
+    },
+  });
+
+  // start server
+  const port = process.env.port || 3000;
+  const server = app.listen(port, () => {
+    console.log(`App started on ${port}`);
+  });
+  socket.init(server);
+
+  // if root password is default, tell user to change
+  const rootUser = await User.findOne({ where: { username: "root" } });
+  const isDefaultPassword = await bcrypt.compare("root", rootUser!.password);
+  if (isDefaultPassword)
+    console.log(
+      "Root user still uses the default password. Please change ASAP!"
+    );
+};
+
+init();
