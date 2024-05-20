@@ -2,6 +2,11 @@
 
 ## Setup
 
+1. Clone repository
+2. Run npm install
+3. Run npx tsc
+4. node app.js
+
 ### .env
 
 Please include an .env file in the root folder.
@@ -11,7 +16,7 @@ Please include an .env file in the root folder.
 
 ```env
 PORT=[Port Number]
-JWT_SECRET=[Complex String]
+JWTSECRET=[Complex String]
 ```
 
 ### Login

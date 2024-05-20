@@ -29,7 +29,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         userId: user.id,
         username: user.username,
       },
-      process.env.JWT_SECRET || "secret",
+      process.env.JWTSECRET || "secret",
       {
         expiresIn: "1h",
       }

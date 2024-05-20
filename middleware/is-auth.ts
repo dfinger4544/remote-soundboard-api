@@ -12,7 +12,7 @@ export default function (req: any, res: Response, next: NextFunction) {
     const token = authHeader.split(" ")[1];
     const decodedToken: any = jwt.verify(
       token,
-      process.env.JWT_SECRET || "secret"
+      process.env.JWTSECRET || "secret"
     );
     if (!decodedToken || !decodedToken?.userId) {
       const error: any = new Error("Not authenticated");
