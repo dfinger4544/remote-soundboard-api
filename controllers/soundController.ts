@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
+import sequelize from "../util/sequelize";
 
 /* import io from "../util/socket"; */
 
@@ -80,6 +81,31 @@ export async function playSound(
     res
       .status(200)
       .json({ message: "Sound played successfully", soundId: soundId });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function playRandomSound(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const sound = await Sound.findOne({ order: sequelize.random() });
+    if (!sound) {
+      const error: any = new Error("No sound found");
+      error.status = 404;
+      throw error;
+    }
+
+    const success: boolean = await sound.play();
+    if (!success)
+      return res.status(200).json({ message: "Error playing sound", sound });
+
+    res
+      .status(200)
+      .json({ message: "Sound played successfully", soundId: sound.id });
   } catch (err) {
     next(err);
   }

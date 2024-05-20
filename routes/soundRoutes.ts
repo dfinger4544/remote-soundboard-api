@@ -19,6 +19,7 @@ router.get(
 );
 
 // GET - play sound on server
+router.get("/random/play", soundCtrl.playRandomSound);
 router.get(
   "/:soundId/play",
   [

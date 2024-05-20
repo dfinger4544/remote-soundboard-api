@@ -169,6 +169,19 @@ Example Response
 
 ```
 
+#### GET /sounds/random/play (\*)
+
+Plays a random sound
+
+Example Response
+
+```JSON
+{
+    "message": "Sound played successfully",
+    "soundId": [Sound ID]
+}
+```
+
 #### GET /sounds/{soundId}/play (\*)
 
 Plays the sound of the corresponding soundId
