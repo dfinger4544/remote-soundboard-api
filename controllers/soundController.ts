@@ -74,8 +74,8 @@ export async function playSound(
       throw error;
     }
 
-    const success: boolean = await sound.play();
-    if (!success)
+    const pid: number | void = await sound.play();
+    if (!pid)
       return res.status(200).json({ message: "Error playing sound", sound });
 
     res
@@ -99,8 +99,8 @@ export async function playRandomSound(
       throw error;
     }
 
-    const success: boolean = await sound.play();
-    if (!success)
+    const pid: number | void = await sound.play();
+    if (!pid)
       return res.status(200).json({ message: "Error playing sound", sound });
 
     res

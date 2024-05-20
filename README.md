@@ -270,7 +270,8 @@ Example Response
 
 ## Next Steps
 
-Fix typing for variable containing the :any type:
+Fix the following:
 
-1. Custom Error class to include statusCode and error list
-2. Custom request to include userId
+1. Custom Error class to include statusCode and error list (remove any type from errors)
+2. Custom request to include userId (remove any time from requests)
+3. Figure out static methods for typescript/sequelize and convert SoundCtrl and gpioCtrl play random to static method

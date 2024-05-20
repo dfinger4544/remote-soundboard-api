@@ -1,6 +1,6 @@
 *.js
-*.db
 public/
+data/
 
 # Logs
 logs

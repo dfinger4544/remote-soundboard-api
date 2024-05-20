@@ -1,4 +1,5 @@
 import { Model, DataTypes } from "sequelize";
+import { ChildProcess } from "child_process";
 import sequelizeInstance from "../util/sequelize";
 const config = {
   tableName: "Sound",
@@ -13,7 +14,8 @@ class Sound extends Model {
   imagePath!: string;
   soundPath!: string;
 
-  play!: () => Promise<boolean>;
+  play!: () => Promise<number | void>;
+  killAll!: () => void;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -43,13 +45,38 @@ Sound.init(
   config
 );
 
-Sound.prototype.play = async function (): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    player.play(this.soundPath, function (err: Error) {
-      if (err) return reject(false);
-      return resolve(true);
+const queue: { [key: number]: ChildProcess } = {};
+
+Sound.prototype.play = async function (): Promise<number | void> {
+  try {
+    let pid: number | undefined;
+    const process: ChildProcess = player.play(this.soundPath, (err) => {
+      if (err) console.log(err);
+      if (pid && queue[pid]) delete queue[pid];
     });
-  });
+
+    pid = process.pid;
+    if (pid) queue[pid] = process;
+
+    return pid;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// @ts-ignore comment
+Sound.killAll = function () {
+  try {
+    Object.entries(queue).forEach(([key, value]) => {
+      const pid: number = parseInt(key),
+        process: ChildProcess = value;
+
+      process.kill();
+      delete queue[pid];
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export default Sound;

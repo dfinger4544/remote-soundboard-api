@@ -59,8 +59,14 @@ app.use(
   ])
 );
 
+// register buttons (if existenabled in config
+import gpio from "./util/gpio";
+gpio.init();
+
+// models
 import User from "./models/userModel";
 
+// middleware
 import isAuth from "./middleware/is-auth.js";
 
 // routes
