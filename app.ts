@@ -70,11 +70,13 @@ import User from "./models/userModel";
 import isAuth from "./middleware/is-auth.js";
 
 // routes
-import soundRoutes from "./routes/soundRoutes";
 import authRoutes from "./routes/authRoutes";
+import soundRoutes from "./routes/soundRoutes";
+import deviceRoutes from "./routes/deviceRoutes";
 
 app.use("/auth", authRoutes);
 app.use("/sounds", isAuth, soundRoutes);
+app.use("/device", isAuth, deviceRoutes);
 app.use("/files", isAuth, express.static(soundsFolder)); // static for sound files
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   res

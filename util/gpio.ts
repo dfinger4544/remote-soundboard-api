@@ -34,8 +34,8 @@ if (gpioConfig) {
       gpio.buttons[fnName] = new Gpio(value, "in", "both");
       gpio.buttons[fnName].longPress = false;
       gpio.buttons[fnName].longPressTimer = undefined;
-      gpio.buttons[fnName].doublePress = false;
-      gpio.buttons[fnName].doublePressTimer = undefined;
+      /* gpio.buttons[fnName].doublePress = false;
+      gpio.buttons[fnName].doublePressTimer = undefined; */
     }
   }
 
@@ -82,6 +82,7 @@ export default {
           if (!spamInterval && !isUp) {
             setStatusLed(1);
           }
+          //
           // if interval exists and key up, destroy interval and sound queue
           else if (spamInterval && isUp) {
             spamInterval = clearInterval(spamInterval); // clear spam interval
@@ -102,14 +103,14 @@ export default {
             return;
           }
 
-          // setup double press
+          /* // setup double press
           console.log(gpio.buttons.random_sound.doublePress);
           gpio.buttons.random_sound.doublePress = true;
           clearTimeout(gpio.buttons.random_sound.doublePressTimer);
-          gpio.buttons.random_sound.doublePress = setTimeout(
+          gpio.buttons.random_sound.doublePressTimer = setTimeout(
             () => (gpio.buttons.random_sound.doublePress = false),
             doublePressTime
-          );
+          ); */
 
           // setup long press
           gpio.buttons.random_sound.longPress = false;
