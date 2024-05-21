@@ -175,9 +175,18 @@ export async function updateSound(
       throw error;
     }
 
+    // update sound
     if (name) sound.name = name;
-    if (imageFile) sound.imagePath = imageFile.path;
-    if (audioFile) sound.imagePath = audioFile.path;
+    if (imageFile) {
+      // remove old file and replace with new path
+      fs.rmSync(sound.imagePath);
+      sound.imagePath = imageFile.path;
+    }
+    if (audioFile) {
+      // remove old file and replace with new path
+      fs.rmSync(sound.soundPath);
+      sound.soundPath = audioFile.path;
+    }
     await sound.save();
 
     res.status(200).json({ message: "Sound updated successfully", sound });
@@ -192,6 +201,7 @@ export async function deleteSound(
   next: NextFunction
 ) {
   try {
+    // get sound info
     const soundId = req.params.soundId;
     const sound = await Sound.findByPk(soundId);
     if (!sound) {
@@ -199,6 +209,10 @@ export async function deleteSound(
       error.status = 404;
       throw error;
     }
+
+    // remove files and destroy record
+    fs.rmSync(sound.imagePath);
+    fs.rmSync(sound.soundPath);
     await sound.destroy();
 
     res
