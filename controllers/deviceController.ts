@@ -1,8 +1,14 @@
-import { Request, Response, NextFunction } from "express";
 import * as os from "os";
+import * as path from "path";
+
+import { Request, Response, NextFunction } from "express";
 import { exec } from "child_process";
+import Player from "play-sound";
+const player = Player();
 
 const platform = os.platform();
+const beep = path.join(__dirname, "..", "data", "beep.wav");
+console.log(beep);
 
 export async function getPlatform(
   req: Request,
@@ -33,7 +39,11 @@ export async function volumeUp(
         "amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }'",
         (err, value) => {
           if (err) throw err;
-          res.status(200).json({ message: "Volume increased", volume: value });
+
+          player.play(beep);
+          res
+            .status(200)
+            .json({ message: "Volume increased", volume: value.trim() });
         }
       );
     });
@@ -59,7 +69,11 @@ export async function volumeDown(
         "amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }'",
         (err, value) => {
           if (err) throw err;
-          res.status(200).json({ message: "Volume decreased", volume: value });
+
+          player.play(beep);
+          res
+            .status(200)
+            .json({ message: "Volume decreased", volume: value.trim() });
         }
       );
     });
