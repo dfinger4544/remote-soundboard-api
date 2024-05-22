@@ -8,7 +8,7 @@ const player = Player();
 
 const platform = os.platform();
 const beep = path.join(__dirname, "..", "data", "beep.wav");
-console.log(beep);
+const bye = path.join(__dirname, "..", "data", "bye.wav");
 
 export async function getPlatform(
   req: Request,
@@ -115,7 +115,11 @@ export async function shutdown(
       error.statusCode = 503;
       throw error;
     }
-    exec("sudo shutdown -h now");
+
+    await player.play(bye);
+    exec("sudo shutdown -h now", (err) => {
+      if (err) throw err;
+    });
   } catch (err) {
     next(err);
   }
@@ -128,7 +132,11 @@ export async function reboot(req: Request, res: Response, next: NextFunction) {
       error.statusCode = 503;
       throw error;
     }
-    exec("sudo reboot -h now");
+
+    await player.play(bye);
+    exec("sudo reboot -h now", (err) => {
+      if (err) throw err;
+    });
   } catch (err) {
     next(err);
   }
