@@ -57,13 +57,17 @@ const setStatusLed = (status: number) => {
 };
 
 const playRandomSound = async () => {
-  const sound = await Sound.findOne({ order: sequelize.random() });
-  if (!sound) {
-    const error: any = new Error("No sound found");
-    error.status = 404;
-    throw error;
+  try {
+    const sound = await Sound.findOne({ order: sequelize.random() });
+    if (!sound) {
+      const error: any = new Error("No sound found");
+      error.status = 404;
+      throw error;
+    }
+    await sound.play();
+  } catch (err) {
+    console.log(err);
   }
-  await sound.play();
 };
 
 export default {

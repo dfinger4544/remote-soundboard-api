@@ -14,10 +14,9 @@ const player = Player();
 dotenv.config();
 
 // public folder
-const soundsFolder = path.join(__dirname, "public", "sounds"),
+const audioFolder = path.join(__dirname, "public", "audio"),
   imagesFolder = path.join(__dirname, "public", "images");
-if (!fs.existsSync(soundsFolder))
-  fs.mkdirSync(soundsFolder, { recursive: true });
+if (!fs.existsSync(audioFolder)) fs.mkdirSync(audioFolder, { recursive: true });
 if (!fs.existsSync(imagesFolder))
   fs.mkdirSync(imagesFolder, { recursive: true });
 
@@ -33,7 +32,7 @@ const multerStorage = multer.diskStorage({
     if (file.fieldname === "image") {
       cb(null, imagesFolder);
     } else if (file.fieldname === "audio") {
-      cb(null, soundsFolder);
+      cb(null, audioFolder);
     }
   },
   filename: (req, file, cb) => {
@@ -76,10 +75,10 @@ import authRoutes from "./routes/authRoutes";
 import soundRoutes from "./routes/soundRoutes";
 import deviceRoutes from "./routes/deviceRoutes";
 
+app.use("/", isAuth, express.static(path.join(__dirname, "public"))); // static for sound files
 app.use("/auth", authRoutes);
 app.use("/sounds", isAuth, soundRoutes);
 app.use("/device", isAuth, deviceRoutes);
-app.use("/files", isAuth, express.static(soundsFolder)); // static for sound files
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   res
     .status(err.status || 500)

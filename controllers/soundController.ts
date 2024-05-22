@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as path from "path";
 import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 import sequelize from "../util/sequelize";
@@ -16,9 +17,17 @@ export async function getSounds(
   try {
     const sounds = await Sound.findAll();
 
-    return res
-      .status(200)
-      .json({ message: "sounds retrieved successfully", sounds });
+    return res.status(200).json({
+      message: "sounds retrieved successfully",
+      sounds: sounds.map((sound) => {
+        return {
+          id: sound.id,
+          name: sound.name,
+          publicImagePath: sound.publicImagePath,
+          publicSoundPath: sound.publicSoundPath,
+        };
+      }),
+    });
   } catch (err) {
     next(err);
   }
@@ -46,7 +55,15 @@ export async function getSound(
       throw error;
     }
 
-    res.status(200).json({ message: "Sound retrieved successfully", sound });
+    res.status(200).json({
+      message: "Sound retrieved successfully",
+      sound: {
+        id: sound.id,
+        name: sound.name,
+        publicImagePath: sound.publicImagePath,
+        publicSoundPath: sound.publicSoundPath,
+      },
+    });
   } catch (err) {
     next(err);
   }
@@ -139,9 +156,21 @@ export async function postSound(
       throw error;
     }
 
-    const sound = await Sound.create({ name, imagePath, soundPath });
+    const sound = await Sound.create({
+      name,
+      imagePath,
+      soundPath,
+    });
 
-    res.status(200).json({ message: "Sound uploaded successfully", sound });
+    res.status(200).json({
+      message: "Sound uploaded successfully",
+      sound: {
+        id: sound.id,
+        name: sound.name,
+        publicImagePath: sound.publicImagePath,
+        publicSoundPath: sound.publicSoundPath,
+      },
+    });
   } catch (err) {
     if (imageFile) fs.rmSync(imageFile.path);
     if (audioFile) fs.rmSync(audioFile.path);
@@ -189,7 +218,15 @@ export async function updateSound(
     }
     await sound.save();
 
-    res.status(200).json({ message: "Sound updated successfully", sound });
+    res.status(200).json({
+      message: "Sound updated successfully",
+      sound: {
+        id: sound.id,
+        name: sound.name,
+        publicImagePath: sound.publicImagePath,
+        publicSoundPath: sound.publicSoundPath,
+      },
+    });
   } catch (err) {
     next(err);
   }

@@ -1,3 +1,5 @@
+import * as path from "path";
+
 import { Model, DataTypes } from "sequelize";
 import { ChildProcess } from "child_process";
 import sequelizeInstance from "../util/sequelize";
@@ -12,7 +14,9 @@ class Sound extends Model {
   id?: number;
   name!: string;
   imagePath!: string;
+  publicImagePath!: any;
   soundPath!: string;
+  publicSoundPath!: any;
 
   play!: () => Promise<number | void>;
   killAll!: () => void;
@@ -40,6 +44,18 @@ Sound.init(
     soundPath: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    publicImagePath: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return "/images/" + path.basename(this.imagePath);
+      },
+    },
+    publicSoundPath: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return "/audio/" + path.basename(this.soundPath);
+      },
     },
   },
   config
