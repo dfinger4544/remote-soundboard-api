@@ -27,6 +27,16 @@ export async function volumeUp(
       error.statusCode = 503;
       throw error;
     }
+    exec("amixer -q sset Master 5%+", (err) => {
+      if (err) throw err;
+      exec(
+        "amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }'",
+        (err, value) => {
+          if (err) throw err;
+          res.status(200).json({ message: "Volume increased", volume: value });
+        }
+      );
+    });
   } catch (err) {
     next(err);
   }
@@ -43,6 +53,16 @@ export async function volumeDown(
       error.statusCode = 503;
       throw error;
     }
+    exec("amixer -q sset Master 5%-", (err) => {
+      if (err) throw err;
+      exec(
+        "amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }'",
+        (err, value) => {
+          if (err) throw err;
+          res.status(200).json({ message: "Volume decreased", volume: value });
+        }
+      );
+    });
   } catch (err) {
     next(err);
   }
@@ -60,6 +80,19 @@ export async function shutdown(
       throw error;
     }
     exec("sudo shutdown -h now");
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function reboot(req: Request, res: Response, next: NextFunction) {
+  try {
+    if (platform !== "linux") {
+      const error: any = new Error(`Setting is not accessible on ${platform}`);
+      error.statusCode = 503;
+      throw error;
+    }
+    exec("sudo reboot -h now");
   } catch (err) {
     next(err);
   }

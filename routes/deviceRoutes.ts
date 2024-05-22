@@ -7,5 +7,6 @@ router.get("/platform", deviceCtrl.getPlatform);
 router.get("/volumeUp", deviceCtrl.volumeUp);
 router.get("/volumeDown", deviceCtrl.volumeDown);
 router.get("/shutdown", deviceCtrl.shutdown);
+router.get("/reboot", deviceCtrl.reboot);
 
 export default router;
