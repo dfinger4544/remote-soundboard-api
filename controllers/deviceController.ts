@@ -82,6 +82,28 @@ export async function volumeDown(
   }
 }
 
+export async function volume(req: Request, res: Response, next: NextFunction) {
+  try {
+    if (platform !== "linux") {
+      const error: any = new Error(`Setting is not accessible on ${platform}`);
+      error.statusCode = 503;
+      throw error;
+    }
+
+    exec(
+      "amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }'",
+      (err, value) => {
+        if (err) throw err;
+        res
+          .status(200)
+          .json({ message: "Volume decreased", volume: value.trim() });
+      }
+    );
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function shutdown(
   req: Request,
   res: Response,
