@@ -9,6 +9,8 @@ import { v4 as uuidv4 } from "uuid";
 import * as dotenv from "dotenv";
 import sequelize from "./util/sequelize";
 import * as bcrypt from "bcrypt";
+import Player from "play-sound";
+const player = Player();
 dotenv.config();
 
 // public folder
@@ -111,6 +113,7 @@ const init = async function () {
     console.log(
       "Root user still uses the default password. Please change ASAP!"
     );
+  player.play(path.join(__dirname, "data", "success.wav"));
 };
 
 init();
