@@ -96,7 +96,7 @@ export async function volume(req: Request, res: Response, next: NextFunction) {
         if (err) throw err;
         res
           .status(200)
-          .json({ message: "Volume decreased", volume: value.trim() });
+          .json({ message: "Volume retrieved", volume: value.trim() });
       }
     );
   } catch (err) {
