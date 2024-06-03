@@ -1,9 +1,14 @@
 import * as fs from "fs";
 import * as path from "path";
-import { Gpio } from "onoff";
 
 import Sound from "../models/soundModel";
 import sequelize from "./sequelize";
+
+// optional dependency for GPIO pins
+let Gpio;
+try {
+  Gpio = require("onoff").gpio;
+} catch (err) {}
 
 // config file
 const configFilePath = path.join(
@@ -25,7 +30,7 @@ const gpio: any = {
   leds: {},
 };
 
-if (gpioConfig) {
+if (Gpio && gpioConfig) {
   for (const [key, value] of Object.entries(gpioConfig.buttons)) {
     const fnName: string = key,
       gpioPin: number = value;
