@@ -59,6 +59,18 @@ app.use(
     { name: "audio", maxCount: 1 },
   ])
 );
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 // register buttons (if existenabled in config
 import gpio from "./util/gpio";
@@ -75,10 +87,10 @@ import authRoutes from "./routes/authRoutes";
 import soundRoutes from "./routes/soundRoutes";
 import deviceRoutes from "./routes/deviceRoutes";
 
-app.use("/", isAuth, express.static(path.join(__dirname, "public"))); // static for sound files
 app.use("/auth", authRoutes);
 app.use("/sounds", isAuth, soundRoutes);
 app.use("/device", isAuth, deviceRoutes);
+app.use("/" /* , isAuth */, express.static(path.join(__dirname, "public"))); // static for sound files
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   res
     .status(err.status || 500)
